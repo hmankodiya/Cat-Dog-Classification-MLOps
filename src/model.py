@@ -1,59 +1,16 @@
+from distutils.command.config import config
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
 import tqdm
 from torch.utils.data import random_split,DataLoader
 from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 import gc
-import torchmetrics
 import argparse
+from all_utils import Metrics, create_directory
+from yaml import read_yaml
+import os
 
-
-parser = argparse.ArgumentParser()
-
-
-class Metrics:
-    def score(yhat,y):
-        """Accuracy Score
-
-        Args:
-            yhat (float): probabilities
-            y (integer(0/1)): class label 
-
-        Returns:
-            float: range 0-1
-        """
-        accuracy = torchmetrics.Accuracy()
-        return accuracy(yhat,y)
-    def f1(yhat,y):
-        """F1-Score
-
-        Args:
-            yhat (float): probabilities
-            y (integer(1/0)): class label
-
-        Returns:
-            float: range 0-1
-        """
-        f1 = torchmetrics.F1Score()
-        return f1(yhat,y)
-    
-
-class Config:
-    IMAGE_SIZE   = (224,224)
-    TRAIN_FOLDER = './cat-dog/training_set/'
-    TEST_FOLDER  = './cat-dog/test_set/'
-    DEVICE       = "cuda:0" if torch.cuda.is_available() else "cpu"
-    SPLIT        = (0.7,0.3)
-    TRANSFORMS   =  transforms.Compose([transforms.Resize(size=IMAGE_SIZE),
-                                       transforms.ToTensor()])
-    BATCH_SIZE   = 5
-    MODEL_DIR    = 'Pytorch/predefined/'
-    EPOCH        =  10
-    torch.hub.set_dir(MODEL_DIR)    
-
-    
 class TrainTestLoader:
     def __init__(self):
         """ DataLoader Class """
@@ -137,24 +94,69 @@ class ModelFinal(torch.nn.Module):
             return self(X)
 
 
+class Config:
+    # IMAGE_SIZE   = None
+    # TRAIN_FOLDER = None
+    # TEST_FOLDER  = None
+    # SPLIT        = None
+    # BATCH_SIZE   = None
+    # MODEL_DIR    = None
+    # EPOCH        = None
+    DEVICE       = "cuda:0" if torch.cuda.is_available() else "cpu"
+    TRANSFORMS   =  transforms.Compose([transforms.Resize(size=IMAGE_SIZE),
+                                       transforms.ToTensor()])
+     
+
+
 if __name__ == '__main__':
-    print('loading data---')
-    dl = TrainTestLoader()
-    train_loader,val_loader = dl.get_data(Config.TRAIN_FOLDER)
-    test_loader = dl.get_data(Config.TEST_FOLDER,split=False)
-    print('loaded data---')
+    
+    args = argparse.ArgumentParser()
+    args.add_argument('--config',
+                      '-c',
+                      default='config/config.yaml')
+    args.add_argument('--params',
+                      '-p',
+                      default='params.yaml')
+    
+    config = read_yaml(args.config)
+    params = read_yaml(args.params)
+    
+    artifacts_dir = config['artifacts']['artifacts_dir']
+    model_dir     = config['artifacts']['model_dir']
+    model_dir     = os.path.join(artifacts_dir, model_dir)
+    create_directory([model_dir])
+    torch.hub.ser(model_dir)
+    Config.MODEL_DIR = model_dir
+    
+    
+    data_dir = config['data_source']['data_dir']
+    train_folder = config['data_source']['data_dir']
+    
+    # Config.IMAGE_SIZE = params['IMAGE_SIZE']
+    # Config.TRAIN_FOLDER = config
+    
+    
+    
+    
+    # torch.hub.set_dir(config['model_dir'])   
+    
+    # print('loading data---')
+    # dl = TrainTestLoader()
+    # train_loader,val_loader = dl.get_data(Config.TRAIN_FOLDER)
+    # test_loader = dl.get_data(Config.TEST_FOLDER,split=False)
+    # print('loaded data---')
 
 
-    print('loading model---')
-    gc.collect()
-    resnet    = torch.hub.load('pytorch/vision:v0.10.0','resnet18', pretrained=False)
-    num_ftrs  = resnet.fc.in_features
-    resnet.fc = torch.nn.Linear(num_ftrs,1)
-    resnet    = resnet.to('cuda')
-    model_attached = ModelFinal()
-    model_attached.make(resnet=resnet)
-    print('loaded model---')
+    # print('loading model---')
+    # gc.collect()
+    # resnet    = torch.hub.load('pytorch/vision:v0.10.0','resnet18', pretrained=False)
+    # num_ftrs  = resnet.fc.in_features
+    # resnet.fc = torch.nn.Linear(num_ftrs,1)
+    # resnet    = resnet.to('cuda')
+    # model_attached = ModelFinal()
+    # model_attached.make(resnet=resnet)
+    # print('loaded model---')
 
-    print('starting training---')
-    model_attached.fit(train_loader=train_loader)
-    print('training finished---')
+    # print('starting training---')
+    # model_attached.fit(train_loader=train_loader)
+    # print('training finished---')
