@@ -1,4 +1,3 @@
-from distutils.command.config import config
 import torch
 import numpy as np
 import tqdm
@@ -7,9 +6,19 @@ from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 import gc
 import argparse
-from all_utils import Metrics, create_directory
-from yaml import read_yaml
+from src.utils.all_utils import Metrics, create_directory, read_yaml
 import os
+
+class Config:
+    MODEL_DIR    = None
+    TRAIN_FOLDER = None
+    TEST_FOLDER  = None
+    IMAGE_SIZE   = None
+    TRANSFORMS   = None 
+    SPLIT        = None
+    BATCH_SIZE   = None
+    EPOCH        = None
+    DEVICE       = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 class TrainTestLoader:
     def __init__(self):
@@ -93,49 +102,56 @@ class ModelFinal(torch.nn.Module):
         with torch.no_grad():
             return self(X)
 
-
-class Config:
-    # IMAGE_SIZE   = None
-    # TRAIN_FOLDER = None
-    # TEST_FOLDER  = None
-    # SPLIT        = None
-    # BATCH_SIZE   = None
-    # MODEL_DIR    = None
-    # EPOCH        = None
-    DEVICE       = "cuda:0" if torch.cuda.is_available() else "cpu"
-    TRANSFORMS   =  transforms.Compose([transforms.Resize(size=IMAGE_SIZE),
-                                       transforms.ToTensor()])
-     
-
-
 if __name__ == '__main__':
     
-    args = argparse.ArgumentParser()
-    args.add_argument('--config',
+    arguments = argparse.ArgumentParser()
+    arguments.add_argument('--config',
                       '-c',
                       default='config/config.yaml')
-    args.add_argument('--params',
+    arguments.add_argument('--params',
                       '-p',
                       default='params.yaml')
     
+    args = arguments.parse_args()
+    # print(args.config)
+    
     config = read_yaml(args.config)
     params = read_yaml(args.params)
+    
+    print(params)
     
     artifacts_dir = config['artifacts']['artifacts_dir']
     model_dir     = config['artifacts']['model_dir']
     model_dir     = os.path.join(artifacts_dir, model_dir)
     create_directory([model_dir])
-    torch.hub.ser(model_dir)
+    torch.hub.set_dir(model_dir)
     Config.MODEL_DIR = model_dir
-    
-    
+        
     data_dir = config['data_source']['data_dir']
-    train_folder = config['data_source']['data_dir']
+
+    train_folder = config['data_source']['train_folder']
+    train_folder = os.path.join(data_dir, train_folder)
+
+    test_folder = config['data_source']['test_folder']
+    test_folder = os.path.join(data_dir, test_folder)
     
-    # Config.IMAGE_SIZE = params['IMAGE_SIZE']
-    # Config.TRAIN_FOLDER = config
+    Config.TRAIN_FOLDER = train_folder
+    Config.TEST_FOLDER  = test_folder
     
+    image_size = params['IMAGE_SIZE']
+    Config.IMAGE_SIZE = image_size
+    aug = transforms.Compose([transforms.Resize(size=image_size),
+                                transforms.ToTensor()])
+    config.TRANSFORMS = aug
     
+    split = params['SPLIT']
+    Config.split = split
+    
+    batch_size = params['BATCH_SIZE']
+    Config.BATCH_SIZE = batch_size
+    
+    epoch = params['epoch']
+    Config.EPOCH = epoch
     
     
     # torch.hub.set_dir(config['model_dir'])   

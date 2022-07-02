@@ -1,7 +1,7 @@
 data_source:
   data_dir: cat-dog
-  train_folder: train
-  test_folder: test
+  train_folder: training_set
+  test_folder: test_set
   
 artifacts:
   artifacts_dir: artifacts

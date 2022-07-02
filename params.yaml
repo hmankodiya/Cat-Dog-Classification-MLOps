@@ -1,6 +1,5 @@
-base:
-  random_state: 42
-  SPLIT: (0.7, 0.3)
-  EPOCH: 10
-  BATCH_SIZE: 
-  IMAGE_SIZE: (224,224)
+random_state: 42
+SPLIT: (0.7, 0.3)
+EPOCH: 10
+BATCH_SIZE: 5
+IMAGE_SIZE: (224,224)
