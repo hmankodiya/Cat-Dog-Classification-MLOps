@@ -1,8 +1,8 @@
 artifacts:
   artifacts_dir: artifacts
   model:
-    model_name: resnet18
     model_dir: model
+    model_name: resnet18
     pretrained: False
   data_source:
     data_dir: cat-dog

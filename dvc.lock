@@ -1,0 +1,49 @@
+schema: '2.0'
+stages:
+  prepare_data:
+    cmd: python src/stage_01_prepare.py --config configs/config.yaml --params params.yaml
+    deps:
+    - path: configs/config.yaml
+      md5: 73e16a56f27e68ef0daabb040d8c96ea
+      size: 208
+    - path: src/stage_01_prepare.py
+      md5: a7f0a0b961b8e22430c104b7170971a8
+      size: 1512
+    - path: src/utils/common.py
+      md5: ca29f83b5c6a1f36be3f4159a13d0fd9
+      size: 834
+    outs:
+    - path: artifacts/model/
+      md5: b104bae90abb1e53e5cd243a9ab734aa.dir
+      size: 16516748
+      nfiles: 664
+  prepare_model:
+    cmd: python src/stage_01_prepare.py --config configs/config.yaml --params params.yaml
+    deps:
+    - path: configs/config.yaml
+      md5: 73e16a56f27e68ef0daabb040d8c96ea
+      size: 208
+    - path: params.yaml
+      md5: 24d73de3ed31c9458c645ecb438a021a
+      size: 80
+    - path: src/stage_01_prepare.py
+      md5: 156afd2f9053a61be9b40c1d308407c9
+      size: 1635
+    - path: src/utils/common.py
+      md5: ca29f83b5c6a1f36be3f4159a13d0fd9
+      size: 834
+    outs:
+    - path: artifacts/model/
+      md5: 76b7407db7f87eeb867a25cd60e45f84.dir
+      size: 16516748
+      nfiles: 664
+  featurization:
+    cmd: python src/stage_02_featurization.py --config configs/config.yaml --params
+      params.yaml
+    deps:
+    - path: configs/config.yaml
+      md5: 73e16a56f27e68ef0daabb040d8c96ea
+      size: 208
+    - path: params.yaml
+      md5: 24d73de3ed31c9458c645ecb438a021a
+      size: 80

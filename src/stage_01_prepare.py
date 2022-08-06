@@ -5,7 +5,7 @@ import logging
 from src.utils.common import read_yaml, create_directory
 import torch
 
-STAGE = "01-prepare-data" ## <<< change stage name 
+STAGE = "01-prepare-model" ## <<< change stage name 
 
 logging.basicConfig(
     filename=os.path.join("logs", 'running_logs.log'), 
@@ -28,17 +28,10 @@ def main(config_path, params_path):
                                 model_dir, model_name)
     create_directory([model_dir])
     torch.hub.set_dir(model_dir) 
+    logging.info("model loading initializing")
+    
     torch.hub.load('pytorch/vision:v0.10.0', model_name, pretrained=False)
-    
-    # data_dir = config['data_source']['data_dir']
-    # train_folder = config['data_source']['train_folder']
-    # train_folder = os.path.join(data_dir, train_folder)
-
-    # test_folder = config['data_source']['test_folder']
-    # test_folder = os.path.join(data_dir, test_folder)
-    
-    
-    pass
+    logging.info(f"model {model_name} loaded successfully at {model_dir}")
 
 
 if __name__ == '__main__':
