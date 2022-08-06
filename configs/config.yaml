@@ -1,0 +1,10 @@
+artifacts:
+  artifacts_dir: artifacts
+  model:
+    model_name: resnet18
+    model_dir: model
+    pretrained: False
+  data_source:
+    data_dir: cat-dog
+    train_folder: training_set
+    test_folder: test_set

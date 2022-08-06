@@ -1,0 +1,16 @@
+
+stages:
+  prepare_data:
+    vars:
+      - configs/config.yaml: artifacts
+    cmd: python src/stage_01_prepare.py --config configs/config.yaml --params params.yaml
+    deps:
+      - src/stages_01_prepare.py
+      - src/utils/common.py
+      - configs/config.yaml
+    # params:
+    #   - configs/config.yaml
+    #     - artifacts.model.model_dir
+    #     - artifacts.model.model_name
+    outs:
+      - artifacts/model/
