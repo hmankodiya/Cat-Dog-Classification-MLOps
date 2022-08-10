@@ -24,8 +24,7 @@ def main(config_path, params_path):
     
     model_dir     = config['artifacts']['model']['model_dir']
     model_name    = config['artifacts']['model']['model_name']
-    model_dir = os.path.join(artifacts_dir,
-                                model_dir, model_name)
+    model_dir = os.path.join(artifacts_dir, model_dir, model_name)
     create_directory([model_dir])
     torch.hub.set_dir(model_dir) 
     logging.info("model loading initializing")

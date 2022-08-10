@@ -9,7 +9,6 @@ def create_directory(dirs: list):
         print(f'directory created at {dir_path}')
 
 
-
 def read_yaml(path_to_yaml: str) -> dict:
     with open(path_to_yaml) as yaml_file:
         content = yaml.safe_load(yaml_file)

@@ -6,7 +6,11 @@ from torch.utils.data import random_split, DataLoader, tr
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import transforms
 from src.utils.common import read_yaml
-from src.stage_02_featurization import TrainTestLoader
+from src.stage_02_featurization import TrainTestLoader, get_data_paths
+from src.utils.metrics import Metrics
+import tqdm
+import gc
+
 STAGE = "03-training" ## <<< change stage name 
 
 logging.basicConfig(
@@ -19,40 +23,127 @@ logging.basicConfig(
 
 class Config:
     DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
-    def __init__(self, model_dir, train_folder, test_folder, image_size, 
-                 batch_size, split, epochs):
-        torch.hub.set_dir(model_dir)    
-        self.image_size   = image_size
-        self.train_folder = train_folder
-        self.test_folder  = test_folder
-        self.split        = split
-        self.transforms   = transforms.Compose([transforms.Resize(size=self.image_size), 
-                                                transforms.ToTensor()])
-        self.batch_size   = batch_size
-        self.model_dir    = model_dir
-        self.epoch        =  epochs
+    image_size   = None
+    transforms   = None
+    # transforms.Compose([transforms.Resize(size=image_size), 
+    #                                     transforms.ToTensor()])
+    train_folder  = None
+    test_folder   = None
+    split         = None
+    batch_size    = None
+    model_dir     = None
+    epochs        = None
+    learning_rate = None
+    random_state  = None
+    model_name    = None
+    repository    = None
+        
 
-def main(config_path):
-    ## read config files
-    config = read_yaml(config_path)
+class ModelFinal(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        
+    def make(self, resnet):
+        gc.collect()
+        self.resnet    = torch.hub.load(os.path.join(Config.model_dir, Config.repository), 
+                                        Config.model_name, pretrained=False)
+        num_ftrs       = resnet.fc.in_features
+        self.resnet.fc = torch.nn.Linear(num_ftrs,1)
+        self.resnet    = resnet.to(Config.DEVICE)
+
+    def train(self, X_cuda, y_cuda):
+        out = self(X_cuda)
+        return torch.nn.functional.binary_cross_entropy(out, y_cuda)
     
-    artifacts_dir = config['artifacts']['artifacts_dir']
+    def fit(self, train_loader, val_loader=None, epochs=Config.epoch, lr=Config.learning_rate):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        for epoch in range(epochs):
+            total_avg_loss = 0
+            total_loss = 0
+            iterator_loader = tqdm.tqdm(train_loader, desc='Train Batch', total=len(train_loader))
+            for iteration,batch in enumerate(iterator_loader):
+                X_cuda = batch[0].to(dtype=torch.float32, device=Config.DEVICE)
+                y_cuda = batch[1].to(dtype=torch.float32, device=Config.DEVICE).unsqueeze(1)
+                loss = self.train(X_cuda, y_cuda)
+                total_loss += loss.item()
+                total_avg_loss = total_loss/(iteration+1)
+                loss.backward()
+                opt.step()
+                opt.zero_grad()
+                torch.cuda.empty_cache()
+                iterator_loader.set_postfix({'total batch loss':loss.item(), 'total avg loss': total_avg_loss})
+            print()
+            self.validate(val_loader)
+            gc.collect()
+
+    def validate(self,val_loader):
+        average_val_score = 0
+        average_f1_score = 0
+        total_f1 = 0
+        total_score = 0
+        iterator_loader = tqdm.tqdm(val_loader, desc='Val Batch', 
+                                    total=len(val_loader))
+        
+        for iteration,batch in enumerate(iterator_loader):
+            
+            X_val_cuda = batch[0].to(dtype=torch.float32, device=Config.DEVICE)
+            y_val = torch.unsqueeze(batch[1].to(dtype=torch.int32), dim=1)
+            predictions  = self.predict(X_val_cuda).to('cpu')
+            
+            accuracy = Metrics.score(predictions, y_val)
+            total_score += accuracy.item()
+            average_val_score  = total_score/(iteration+1)
+            
+            f1 = Metrics.f1(predictions,y_val)
+            total_f1 += f1.item()
+            average_f1_score = total_f1/(iteration+1)
+            
+            iterator_loader.set_postfix({'average f1 score': average_f1_score,
+                                         'average accuracy score': average_val_score})
+        return average_val_score, average_f1_score
+            
+    def forward(self, X):
+        model_output = self.resnet(X)
+        softmax_output = torch.nn.Sigmoid()(model_output)
+        return softmax_output
     
-    data_dir     = config['artifacts']['data_source']['data_dir']
-    train_data   = config['artifacts']['data_source']['train_folder']
-    test_data    = config['artifacts']['data_source']['test_folder']
+    def predict(self,X):
+        with torch.no_grad():
+            return self(X)
+
+
+def main(config_path, params_path):
+
+    train_dir, test_dir, model_dir, repository, model_name = get_data_paths(config_path=config_path)    
+    params = read_yaml(params_path)
     
-    train_dir = os.path.join(data_dir, train_data)
-    test_dir  = os.path.join(data_dir, test_data)
+    Config.image_size    = (params['IMAGE_SIZE']['HEIGHT'], params['IMAGE_SIZE']['WIDHT'])
+    Config.split         = (params['TRAIN_SPLIT'], params['TEST_SPLIT'])
+    Config.epochs        = params['EPOCH']
+    Config.batch_size    = params['BATH_SIZE']
+    Config.learning_rate = params['LEARNING_RATE']
+    Config.random_state  = params['RANDOM_STATE']
+    Config.train_folder  = train_dir
+    Config.test_folder   = test_dir
+    Config.model_dir     = model_dir
+    Config.repository    = repository
+    Config.model_name    = model_name
+    Config.transforms    = transforms.Compose([transforms.Resize(size=Config.image_size),
+                                               transforms.ToTensor()])
+    torch.hub.set_dir(model_dir)
+    
+    data_loader = TrainTestLoader()
+    train_loader, val_loader = data_loader.get_data(Config.train_folder)
+        
+    model_attached = ModelFinal()
+    model_attached.make()
+    
+    
+    
     
     logging.info(f'Train Dir {train_dir}\nTest Dir {test_dir}')
     
     return train_dir, test_dir
-
-
-
-
-
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
