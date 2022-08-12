@@ -6,6 +6,7 @@ stages:
       - src/utils/common.py
       - configs/config.yaml 
       - params.yaml 
+      - requirements.txt
     outs:
       - artifacts/model/
   featurization:
@@ -14,16 +15,18 @@ stages:
       - configs/config.yaml 
       - params.yaml
       - src/stage_02_featurization.py
+      - requirements.txt
   training:
     cmd: python src/stage_03_train.py --config configs/config.yaml --params params.yaml
     deps:
       - configs/config.yaml
       - params.yaml
+      - requirements.txt
       - src/stage_03_train.py
       - src/stage_02_featurization.py
       - src/stage_01_prepare.py
       - artifacts/model/
       - src/utils/metrics.py
       - src/utils/common.py
-    
+
 

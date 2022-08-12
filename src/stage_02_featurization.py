@@ -37,7 +37,6 @@ class TrainTestLoader:
 
             return self.train_loader, self.val_loader
         else:
-
             self.test = ImageFolder(data_folder, transform=transforms)
             self.test_loader = DataLoader(self.test)
 
@@ -53,7 +52,7 @@ def get_data_paths(config_path):
     data_dir = config['artifacts']['data_source']['data_dir']
     train_data = config['artifacts']['data_source']['train_folder']
     test_data = config['artifacts']['data_source']['test_folder']
-    model_dir = config['artifacts']['data_source']['model_dir']
+    model_dir = config['artifacts']['model']['model_dir']
     model_name = config['artifacts']['model']['model_name']
     repository = config['artifacts']['model']['repo']        
     

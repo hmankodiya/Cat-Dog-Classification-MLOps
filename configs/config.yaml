@@ -4,7 +4,7 @@ artifacts:
     model_dir: model
     model_name: resnet18
     pretrained: False
-    repo: pytorch/vision:v0.10.0
+    repo: pytorch_vision_v0.10.0
   data_source:
     data_dir: cat-dog
     train_folder: training_set
