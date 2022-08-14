@@ -5,7 +5,14 @@ artifacts:
     model_name: resnet18
     pretrained: False
     repo: pytorch_vision_v0.10.0
+    model_weights:  checkpoints
   data_source:
     data_dir: cat-dog
     train_folder: training_set
     test_folder: test_set
+
+plots:
+  plots_dir: 'plots'
+  itr_loss: 'itr_loss.json'
+  avg_batch_loss: 'avg_batch_loss.json'
+  validation_metrics: 'validation_metrics.json'

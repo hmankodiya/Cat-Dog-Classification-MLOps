@@ -19,14 +19,26 @@ stages:
   training:
     cmd: python src/stage_03_train.py --config configs/config.yaml --params params.yaml
     deps:
-      - configs/config.yaml
+      - configs/config.yaml 
       - params.yaml
       - requirements.txt
-      - src/stage_03_train.py
-      - src/stage_02_featurization.py
       - src/stage_01_prepare.py
-      - artifacts/model/
+      - src/stage_02_featurization.py
+      - src/stage_03_train.py
       - src/utils/metrics.py
       - src/utils/common.py
-
-
+    plots:
+      - plots/itr_loss.json:
+          cache:  false
+          x: Iteration
+          y: Iteration Loss
+      - plots/avg_batch_loss.json:
+          cache:  false
+          x:  Epoch
+          y:  Batch Loss
+      - plots/validation_metrics.json:
+          cache:  false
+          x:  Epoch
+          y:  F1-Score
+  run_plots_command:
+    cmd:  dvc plots diff

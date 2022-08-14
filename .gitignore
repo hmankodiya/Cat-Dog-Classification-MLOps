@@ -131,4 +131,5 @@ dmypy.json
 # Project Specific
 Pytorch
 cat-dog
+rough/
 .vscode

@@ -55,14 +55,16 @@ def get_data_paths(config_path):
     model_dir = config['artifacts']['model']['model_dir']
     model_name = config['artifacts']['model']['model_name']
     repository = config['artifacts']['model']['repo']        
-    
+    model_weights = config['artifacts']['model']['model_weights']
+        
     train_dir = os.path.join(data_dir, train_data)
     test_dir = os.path.join(data_dir, test_data)
     model_dir = os.path.join(artifacts_dir, model_dir, model_name)
+    weights_dir = os.path.join(model_dir, model_weights)
 
-    logging.info(f'Train Dir {train_dir}\nTest Dir {test_dir}\n Model Dir {model_dir}')
+    logging.info(f'Train Dir {train_dir}\nTest Dir {test_dir}\n Model Dir {model_dir}\n Weights Dir {weights_dir}')
 
-    return train_dir, test_dir, model_dir, repository, model_name
+    return train_dir, test_dir, model_dir, repository, model_name, weights_dir
 
 
 if __name__ == '__main__':
