@@ -40,5 +40,17 @@ stages:
           cache:  false
           x:  Epoch
           y:  F1-Score
+  evaluate:
+    cmd: python src/stage_04_evaluate.py --config configs/config.yaml --params params.yaml
+    deps:
+      - configs/config.yaml 
+      - params.yaml
+      - requirements.txt
+      - src/stage_01_prepare.py
+      - src/stage_02_featurization.py
+      - src/stage_03_train.py
+      - src/utils/metrics.py
+      - src/utils/common.py
+    
   run_plots_command:
     cmd:  dvc plots diff

@@ -94,14 +94,12 @@ class ModelFinal(torch.nn.Module):
         logging.info('============== Training Ended ==============')
         return train_itr_loss, train_batch_loss, validation_metrics 
     
-    def validate(self,val_loader):
+    def validate(self, loader):    
         logging.info('--------- Validation Initiated ---------')
-        average_val_score = 0
-        average_f1_score = 0
-        total_f1 = 0
         total_score = 0
-        iterator_loader = tqdm.tqdm(val_loader, desc='Val Batch', 
-                                    total=len(val_loader))
+        total_f1 = 0
+        iterator_loader = tqdm.tqdm(loader, desc='Val Batch', 
+                                    total=len(loader))
         
         for iteration,batch in enumerate(iterator_loader):
             
@@ -111,22 +109,24 @@ class ModelFinal(torch.nn.Module):
             
             accuracy = Metrics.score(predictions, y_val)
             total_score += accuracy.item()
-            average_val_score  = total_score/(iteration+1)
             
             f1 = Metrics.f1(predictions,y_val)
             total_f1 += f1.item()
-            average_f1_score = total_f1/(iteration+1)
             
-            iterator_loader.set_postfix({'average f1 score': average_f1_score,
-                                         'average accuracy score': average_val_score})
+        
+        average_val_score = total_score/len(loader)
+        average_f1_score = total_f1/len(loader)
+        
         logging.info(f'Average Val Score: {average_val_score}, Average F1 Score: {average_f1_score}')
         logging.info('--------- Validation Completed ---------')
         
         return average_val_score, average_f1_score
+    
     def forward(self, X):
         model_output = self.resnet(X)
         softmax_output = torch.nn.Sigmoid()(model_output)
         return softmax_output
+    
     
     def predict(self,X):
         with torch.no_grad():
