@@ -7,8 +7,8 @@ stages:
       md5: e6c53461784834e7ff32350beec4e2dc
       size: 596
     - path: params.yaml
-      md5: 6bfd9c7395baa8dfc2e012fd2893bc69
-      size: 139
+      md5: b851ccc0422e0970f1ec481b0740491f
+      size: 133
     - path: requirements.txt
       md5: 85b40d4962aff81eb3452b3d5f429ab9
       size: 93
@@ -29,20 +29,20 @@ stages:
       size: 579
     outs:
     - path: artifacts/checkpoints/
-      md5: a12fbcd40cb672dfb412232fb359aeaa.dir
+      md5: c8ecf455be8582e0c557e7e91f6f184e.dir
       size: 44795981
       nfiles: 1
     - path: plots/avg_batch_loss.json
-      md5: b53296a98516482f0501505ec9d0bd93
-      size: 122
+      md5: effadf389ae6d31aa1dd18ee187e7b24
+      size: 302
       isexec: true
     - path: plots/itr_loss.json
-      md5: b9a9b3e0f15dcb864569b380e76f804a
-      size: 112037
+      md5: 85f41ded5a763ef9c5f4f18314e76b55
+      size: 338288
       isexec: true
     - path: plots/validation_metrics.json
-      md5: 6e4defd10ebbdfa2284d974bb21734a6
-      size: 169
+      md5: 5171aa44f2d0e77964810ad2b998d426
+      size: 432
       isexec: true
   evaluate:
     cmd: python src/stage_04_evaluate.py --config configs/config.yaml --params params.yaml
@@ -101,8 +101,8 @@ stages:
       md5: e6c53461784834e7ff32350beec4e2dc
       size: 596
     - path: params.yaml
-      md5: 6bfd9c7395baa8dfc2e012fd2893bc69
-      size: 139
+      md5: b851ccc0422e0970f1ec481b0740491f
+      size: 133
     - path: requirements.txt
       md5: 85b40d4962aff81eb3452b3d5f429ab9
       size: 93
@@ -116,8 +116,8 @@ stages:
       md5: e6c53461784834e7ff32350beec4e2dc
       size: 596
     - path: params.yaml
-      md5: 6bfd9c7395baa8dfc2e012fd2893bc69
-      size: 139
+      md5: b851ccc0422e0970f1ec481b0740491f
+      size: 133
     - path: requirements.txt
       md5: 85b40d4962aff81eb3452b3d5f429ab9
       size: 93
@@ -129,6 +129,6 @@ stages:
       size: 860
     outs:
     - path: artifacts/model/
-      md5: fafdcf58576e94136bbe821fcff88973.dir
+      md5: dc71461b39a918e4a18005c58515c9de.dir
       size: 16516748
       nfiles: 664

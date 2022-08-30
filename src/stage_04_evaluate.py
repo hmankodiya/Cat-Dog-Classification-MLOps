@@ -22,12 +22,12 @@ def main(config_path, params_path):
     config = read_yaml(config_path)
     params = read_yaml(params_path)
     
-    checkpoint = config['checkpoint']['checkpoint_name']
+    checkpoint_name = f'{config["artifacts"]["model"]["model_name"]}_batch-size-{params["BATCH_SIZE"]}_epochs-{params["EPOCH"]}_learning_rate-{params["LEARNING_RATE"]}.pth'
 
     checkpoint_path = os.path.join(config['artifacts']['artifacts_dir'], 
                  config['artifacts']['model']['model_weights'],
                  config['artifacts']['model']['model_name'],
-                 checkpoint)
+                 checkpoint_name)
     
     logging.info('============== Testing Initiated ==============')
     
@@ -45,7 +45,7 @@ def main(config_path, params_path):
                                         )
     logging.info(f'Test set loaded successfully')
     
-    logging.info(f'Loading Checkpoint: {checkpoint} of model: {config["artifacts"]["model"]["model_name"]} from {checkpoint_path}')
+    logging.info(f'Loading Checkpoint: {checkpoint_name} of model: {config["artifacts"]["model"]["model_name"]} from {checkpoint_path}')
     model = ModelFinal()
     model = torch.load(checkpoint_path)
     # model.load_state_dict(torch.load(checkpoint_path))

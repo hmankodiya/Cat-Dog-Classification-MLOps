@@ -2,7 +2,15 @@
     "avg_batch_loss": [
         {
             "Epoch": 1,
-            "Batch Loss": 0.7131848843846333
+            "Batch Loss": 0.7005744279228503
+        },
+        {
+            "Epoch": 2,
+            "Batch Loss": 0.6749239120762014
+        },
+        {
+            "Epoch": 3,
+            "Batch Loss": 0.6614108597668658
         }
     ]
 }
