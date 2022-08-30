@@ -25,9 +25,9 @@ def main(config_path, params_path):
     checkpoint = config['checkpoint']['checkpoint_name']
 
     checkpoint_path = os.path.join(config['artifacts']['artifacts_dir'], 
-                 config['artifacts']['model']['model_dir'],
+                 config['artifacts']['model']['model_weights'],
                  config['artifacts']['model']['model_name'],
-                 config['artifacts']['model']['model_weights'], checkpoint)
+                 checkpoint)
     
     logging.info('============== Testing Initiated ==============')
     
@@ -52,17 +52,13 @@ def main(config_path, params_path):
     logging.info('Checkpoint {checkpoint} loaded successfully')
 
     test_average_score, test_average_f1_score = model.validate(test_loader)
-    
-    create_directory([config['plots']['plots_dir']])
 
-    save_json(os.path.join(config['plots']['plots_dir'], config['plots']['test_f1']), {
-                                'model': config['checkpoint']['checkpoint_name'],
-                               config['plots']['test_f1'][:-5]: test_average_f1_score
+    save_json(os.path.join(config['metrics']['metrics_dir'], config['metrics']['test_f1']), {
+                               config['metrics']['test_f1'][:-5]: test_average_f1_score
                                    })
     
-    save_json(os.path.join(config['plots']['plots_dir'], config['plots']['test_score']), {
-                               'model': config['checkpoint']['checkpoint_name'],
-                               config['plots']['test_score'][:-5]: test_average_score
+    save_json(os.path.join(config['metrics']['metrics_dir'], config['metrics']['test_score']), {
+                               config['metrics']['test_score'][:-5]: test_average_score
                                    })
     
     logging.info('============== Testing Ended ==============')

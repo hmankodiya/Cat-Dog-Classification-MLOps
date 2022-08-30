@@ -4,8 +4,8 @@ stages:
     cmd: python src/stage_03_train.py --config configs/config.yaml --params params.yaml
     deps:
     - path: configs/config.yaml
-      md5: 4a50117e700054417cbd89b031ddedef
-      size: 564
+      md5: e6c53461784834e7ff32350beec4e2dc
+      size: 596
     - path: params.yaml
       md5: 6bfd9c7395baa8dfc2e012fd2893bc69
       size: 139
@@ -16,11 +16,11 @@ stages:
       md5: 34844bb4e75ae64d8c6edeb9153006c6
       size: 1608
     - path: src/stage_02_featurization.py
-      md5: 2871730e78a9d9ee3328d0d9dd0c3056
-      size: 3050
+      md5: 01fd099ba86fc9f4927658252012f9a3
+      size: 3066
     - path: src/stage_03_train.py
-      md5: 1f96051e7e309850f43e2c7190ca05de
-      size: 8920
+      md5: 70c1f6ec2bea3d57b59932f97bf5a99b
+      size: 8978
     - path: src/utils/common.py
       md5: ae3a2322968a415ade0e530405eea884
       size: 860
@@ -28,24 +28,36 @@ stages:
       md5: ea7f12586b5df16d240c979b44fb0c28
       size: 579
     outs:
+    - path: artifacts/checkpoints/
+      md5: a12fbcd40cb672dfb412232fb359aeaa.dir
+      size: 44795981
+      nfiles: 1
     - path: plots/avg_batch_loss.json
-      md5: 985e3cf9813cf3d3eb2162c6bfb22dba
+      md5: b53296a98516482f0501505ec9d0bd93
       size: 122
       isexec: true
     - path: plots/itr_loss.json
-      md5: 1d539db5df100a2ec8b09dfed753d395
-      size: 112011
+      md5: b9a9b3e0f15dcb864569b380e76f804a
+      size: 112037
       isexec: true
     - path: plots/validation_metrics.json
-      md5: ddd9bab302ebaa29d65e33a98554345b
-      size: 168
+      md5: 6e4defd10ebbdfa2284d974bb21734a6
+      size: 169
       isexec: true
   evaluate:
     cmd: python src/stage_04_evaluate.py --config configs/config.yaml --params params.yaml
     deps:
+    - path: artifacts/checkpoints/
+      md5: a12fbcd40cb672dfb412232fb359aeaa.dir
+      size: 44795981
+      nfiles: 1
+    - path: artifacts/model/
+      md5: fafdcf58576e94136bbe821fcff88973.dir
+      size: 16516748
+      nfiles: 664
     - path: configs/config.yaml
-      md5: 4a50117e700054417cbd89b031ddedef
-      size: 564
+      md5: e6c53461784834e7ff32350beec4e2dc
+      size: 596
     - path: params.yaml
       md5: 6bfd9c7395baa8dfc2e012fd2893bc69
       size: 139
@@ -56,17 +68,29 @@ stages:
       md5: 34844bb4e75ae64d8c6edeb9153006c6
       size: 1608
     - path: src/stage_02_featurization.py
-      md5: 2871730e78a9d9ee3328d0d9dd0c3056
-      size: 3050
+      md5: 01fd099ba86fc9f4927658252012f9a3
+      size: 3066
     - path: src/stage_03_train.py
-      md5: 1f96051e7e309850f43e2c7190ca05de
-      size: 8920
+      md5: 70c1f6ec2bea3d57b59932f97bf5a99b
+      size: 8978
+    - path: src/stage_04_evaluate.py
+      md5: 432f7c4552d3950aaee8fc0473437457
+      size: 3217
     - path: src/utils/common.py
       md5: ae3a2322968a415ade0e530405eea884
       size: 860
     - path: src/utils/metrics.py
       md5: ea7f12586b5df16d240c979b44fb0c28
       size: 579
+    outs:
+    - path: metrics/test_f1.json
+      md5: 67a2e9d15c74fbd9d776a0984d07a4fb
+      size: 22
+      isexec: true
+    - path: metrics/test_score.json
+      md5: 2a6f2fc4bc4b9fcda996035069a09121
+      size: 41
+      isexec: true
   run_plots_command:
     cmd: dvc plots diff
   featurization:
@@ -74,8 +98,8 @@ stages:
       params.yaml
     deps:
     - path: configs/config.yaml
-      md5: 4a50117e700054417cbd89b031ddedef
-      size: 564
+      md5: e6c53461784834e7ff32350beec4e2dc
+      size: 596
     - path: params.yaml
       md5: 6bfd9c7395baa8dfc2e012fd2893bc69
       size: 139
@@ -83,14 +107,14 @@ stages:
       md5: 85b40d4962aff81eb3452b3d5f429ab9
       size: 93
     - path: src/stage_02_featurization.py
-      md5: 2871730e78a9d9ee3328d0d9dd0c3056
-      size: 3050
+      md5: 01fd099ba86fc9f4927658252012f9a3
+      size: 3066
   prepare_model:
     cmd: python src/stage_01_prepare.py --config configs/config.yaml --params params.yaml
     deps:
     - path: configs/config.yaml
-      md5: 4a50117e700054417cbd89b031ddedef
-      size: 564
+      md5: e6c53461784834e7ff32350beec4e2dc
+      size: 596
     - path: params.yaml
       md5: 6bfd9c7395baa8dfc2e012fd2893bc69
       size: 139
@@ -105,6 +129,6 @@ stages:
       size: 860
     outs:
     - path: artifacts/model/
-      md5: 6675812b7f9a5007df121c1019d03cd5.dir
+      md5: fafdcf58576e94136bbe821fcff88973.dir
       size: 16516748
       nfiles: 664

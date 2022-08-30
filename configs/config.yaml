@@ -19,5 +19,8 @@ plots:
   itr_loss: 'itr_loss.json'
   avg_batch_loss: 'avg_batch_loss.json'
   validation_metrics: 'validation_metrics.json'
+
+metrics:
+  metrics_dir: metrics
   test_f1: 'test_f1.json'
   test_score: 'test_score.json'

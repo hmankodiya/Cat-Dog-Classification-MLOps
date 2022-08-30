@@ -60,7 +60,7 @@ def get_data_paths(config_path):
     train_dir = os.path.join(data_dir, train_data)
     test_dir = os.path.join(data_dir, test_data)
     model_dir = os.path.join(artifacts_dir, model_dir, model_name)
-    weights_dir = os.path.join(model_dir, model_weights)
+    weights_dir = os.path.join(artifacts_dir, model_weights, model_name)
 
     logging.info(f'Train Dir {train_dir}\nTest Dir {test_dir}\n Model Dir {model_dir}\n Weights Dir {weights_dir}')
 

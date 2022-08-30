@@ -40,6 +40,8 @@ stages:
           cache:  false
           x:  Epoch
           y:  F1-Score
+    outs:
+      - artifacts/checkpoints/
   evaluate:
     cmd: python src/stage_04_evaluate.py --config configs/config.yaml --params params.yaml
     deps:
@@ -49,17 +51,15 @@ stages:
       - src/stage_01_prepare.py
       - src/stage_02_featurization.py
       - src/stage_03_train.py
+      - src/stage_04_evaluate.py
       - src/utils/metrics.py
       - src/utils/common.py
-      - artifacts/model
-    plots:
-      - plots/test_f1.json:
+      - artifacts/model/
+      - artifacts/checkpoints/
+    metrics:
+      - metrics/test_f1.json:
           cache: False
-          x:  model
-          y:  test_f1
-      - plots/test_score/json:
+      - metrics/test_score.json:
           cache: False
-          x:  model
-          y:  test_score
   run_plots_command:
     cmd:  dvc plots diff
