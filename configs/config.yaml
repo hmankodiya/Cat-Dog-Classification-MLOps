@@ -12,10 +12,12 @@ artifacts:
     test_folder: test_set
 
 checkpoint:
-  checkpoint_name: resnet18_batch-size-5_epochs-5_learning_rate-0.001.pth
+  checkpoint_name: resnet18_batch-size-5_epochs-1_learning_rate-0.001.pth
 
 plots:
   plots_dir: 'plots'
   itr_loss: 'itr_loss.json'
   avg_batch_loss: 'avg_batch_loss.json'
   validation_metrics: 'validation_metrics.json'
+  test_f1: 'test_f1.json'
+  test_score: 'test_score.json'

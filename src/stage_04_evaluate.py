@@ -3,7 +3,7 @@ import os
 import logging
 import torch
 from torchvision.transforms import transforms
-from src.utils.common import read_yaml, save_json
+from src.utils.common import create_directory, read_yaml, save_json
 from src.stage_03_train import ModelFinal
 from src.stage_02_featurization import TrainTestLoader
 
@@ -51,8 +51,20 @@ def main(config_path, params_path):
     # model.load_state_dict(torch.load(checkpoint_path))
     logging.info('Checkpoint {checkpoint} loaded successfully')
 
-    test_average_val_score, test_average_f1_score = model.validate(test_loader)
-        
+    test_average_score, test_average_f1_score = model.validate(test_loader)
+    
+    create_directory([config['plots']['plots_dir']])
+
+    save_json(os.path.join(config['plots']['plots_dir'], config['plots']['test_f1']), {
+                                'model': config['checkpoint']['checkpoint_name'],
+                               config['plots']['test_f1'][:-5]: test_average_f1_score
+                                   })
+    
+    save_json(os.path.join(config['plots']['plots_dir'], config['plots']['test_score']), {
+                               'model': config['checkpoint']['checkpoint_name'],
+                               config['plots']['test_score'][:-5]: test_average_score
+                                   })
+    
     logging.info('============== Testing Ended ==============')
 
 if __name__ == '__main__':

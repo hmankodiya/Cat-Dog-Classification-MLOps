@@ -51,6 +51,15 @@ stages:
       - src/stage_03_train.py
       - src/utils/metrics.py
       - src/utils/common.py
-    
+      - artifacts/model
+    plots:
+      - plots/test_f1.json:
+          cache: False
+          x:  model
+          y:  test_f1
+      - plots/test_score/json:
+          cache: False
+          x:  model
+          y:  test_score
   run_plots_command:
     cmd:  dvc plots diff

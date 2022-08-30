@@ -172,6 +172,8 @@ def main(config_path, params_path):
     train_itr_loss, train_batch_loss, validation_metrics = model_attached.fit(train_loader=train_loader, val_loader=val_loader,
                        epochs=Config.epochs, lr=Config.learning_rate)
     
+    create_directory([config['plots']['plots_dir']])
+    
     itr_loss_name = config['plots']['itr_loss']
     avg_batch_loss_name = config['plots']['avg_batch_loss']
     validation_metrics_name = config['plots']['validation_metrics']
